@@ -1,0 +1,435 @@
+// Cherno's c++ playlist https://www.youtube.com/playlist?list=PLlrATfBNZ98dudnM48yfGUldqGD0S4FFb
+Welcome to C++
+- Most used for performance
+- Direct access to hardware
+- As long there's a compiler for the platform, c++ can be developed for any platform
+- Bad c++ code can be worse than c# or java
+
+How C++ works
+- Workflow. Source files -> executable binary
+- # -> preprocessor statements 
+- #include <iostream> -> includes whatever is in iostream to our file
+- main -> entrypoint to our program
+- << -> overloaded operator << might equal doing .printf()
+- header files are not compiled, they just include
+- once we compile into obj, we link them to an executable.
+- When you compile one file there's no need to link
+
+How the C++ compiler
+- takes our code and converts into intermediate code (.obj), the linker then puts them together
+- The compiler does various things: it preprocesses our code ( our preprocessor statements get evaluated), 
+then it tokenizes, parses, etc into a format the compiler can reason with and finally translates into machine code.
+
+- To see the preprocessing, compile with -E ( preprocess to file ) 
+
+- The .o generate by doing 
+	- g++ -c Math.cpp 
+- for example is machine code and isn't really readable, to actually be able to read the generated machine code, we can compile it to assembly by doing
+	- g++ -S -o Math.s Math.cpp
+
+- When we compile with optimization, the generated assembly code will have a lesser footprint but for debugging no optimization is usually better.
+
+How C++ Linker Works
+- Linking is the step from which we go from our object files ( .o ) to our executable file
+- Linking finds where each symbol and function is and link them together
+- There's a distinction to be made between compiler errors, which might be a syntax error and linking errors which might be that the entry point can't be found or can't find the declaration to a function, etc
+- We can have trouble when we have various functions with the same signature, the linker will not know which one to use and will throw an error
+- We normally use headers for declarations and if we have a function inside a header file we can declare it as static ( and wherever it is used will be like a local copy ) or inline ( which replaces the call to the function by the contents of the function during compile time )
+
+How to Debug C++ in Visual Studio
+- Key Concepts: Breakpoints and Looking at memory.
+- Breakpoint: A point in our program where it will break ( pause ). Once we are at the breakpoint we can look at the current state of the program ( memory ).
+- Memory: Variables.
+- Step into: into a function
+- Step over: skip function and to next instruction
+- Step out: get out of current function
+- We can go line, by line and skip functions.
+- Visual Studio. Memory view let's us look at the used memory and we can watch variables.
+
+Conditionals and Branches 
+- Sometimes they carry a certain overhead so we try to avoid using them for very optimized code.
+- if we go to dissassembly we can quickly see the code the compiler has generated
+
+Best Visual Studio Setup for C++ Projects
+- Filters ( Header files, resource files, source files ) are not neccesarily folders.
+- Show all files is the actual structure
+- Output directory and interrmediate directory 
+- output directory is usually set to 	$(SolutionDir)bin\$(Platform)\$(Configuration)\
+- Intermediates directory is 		$(SolutionDir)bin\intermediates\$(Platform)\$(Configuration)\
+
+Pointers
+- One of the most important things in programming is memory.
+- Most of the things you do when you programmins is storing things from memory and accessing them.
+- A pointer is an integer that stores a memory address. 
+- You can write programs without programs but pointers are necessary to be more efficient since we have more control of memory with pointers.
+
+References
+- They are an extension of pointers.
+- Pointers and references are the same thing with regards to what the computer does with them. 
+- References are a way to reference an existing variable
+- Pointers can be null but references have to reference an existing variable.
+- Reference is a sort of syntax sugar. If you can get away by using references it is preferable but pointers have more power. 
+- Once you declare a reference you can't change what it references to. 
+
+Classes
+- They are usually used in object oriented programming.
+- They are a way to group data and functionality
+- Most of the things you can do without classes but using classes usually allows to have more mantainable code
+
+Classes vs Structs
+- There is basically no difference between a struct and a class except a difference with visibility
+- Classes have members and attributes to private by default. So if you don't specify any visibility modifier ( public, private, protected ) everything inside the class is private.
+- With a struct the default visibility modifier is public. 
+- They technically don't have much of a difference but the usage in code is different and is usually up to the style of the programmer in how to use them. 
+- We keep struct as a compatibility with C. 
+- One way of using structs is when we want to store plain old data. Some kind of structure which just represents variables
+- We don't usually use inheritance with structs and we reserve that for classes
+
+Static in c++
+- 2 contexts: using outside of a class/struct or inside of a class/struct
+- outside a class/struct: That variable ( symbol ) will only be accessible in that translation unit ( file )
+- inside a class: That variable will share memory across al instances of the class. So it will be the same along all instances of the class.
+- We want to use static as much as we can, we can sort of think of it as private inside a class. When we don't put static it is available to the linker.
+
+Static inside a class or struct
+- if we use static with a variable it means there will only be an instance of that variable across all the instances of the class. If we change the static variable in the class it will change for all the instances of the class.
+- With a static ( class ) methos something similar happens in the sense that inside the method you don't have access to the class instance. You can access this method without an instance of the class
+
+Local Static
+- Declaring a static variable in a local scope ensures that the lifetime of the variable we declared will exist forr the whole duration of our program. However it's scope will be limited to inside the function it's in. 
+
+Enums
+- Short for enumeration
+- Set of values
+- Way to give a name to a value
+- It's also a way of limiting what values can be asigned to what
+- Good when you want to use ints to represent a state, but you want to name them to make them more readable
+
+Constructor
+- Code that runs every time we instantiate an object
+- Very important to initialise the attributes of the class
+- You can create as many constructors as long as they have different signature
+- If you use static methods from a class the constructor won't be called
+- When you use new it will call the constructor
+- Make sure that all the memory is set and any other additional setup for the usage of the class
+
+Destructor 
+- Runs when you destroy an object
+- Constructor you set variables up and in the destructor you deinitialize variables or clean any memory we have used
+- It applies to both stack and heap memory
+
+Inheritance
+- We can have common code in a base class and then specific code in a child class
+- Inheritance allows us to use polymorphism. Multiple types for a single type
+- We can use the inherited class wherever we could be able to use the base class
+
+Virtual Functions
+- They allow us to override functions in subclasses. 
+- By marking a function as virtual. The subclass can change the behavious of the inherited function
+- If we have a function that takes the base class, it will always execute the base class function and not the function of the child class, unless we override the method
+- Virtual functions use dynamic dispatch which is implemented with a vtable. A vtable contains a mapping of all our virtual functions inside the base class so we can map them to the correct overriden function
+- If you want to override a function you have to mark it inside the base class with virtual
+- We can mark the functions that are overriden in the child class with override even though it's not required. It's recommende to do since it's more readable. It's writen after the function and before the brackets.
+- There are 2 runtime costs associated with virtual functions. 
+	- The additional memory in the base class to store the vtable
+	- Every time we call a virtual function we have to go through that table to determine which function to actually map to
+
+Interfaces ( Pure virtual function )
+- It's the same as an abstract method or interface in other languages ( Java or C# ). 
+- With it we create a class with all virtual functions and without implementation and we force subclasses to implement them. 
+- When we provide an implementation in the base class, it means that overriding the method is optional. 
+- In some cases, it doesn't make sense to provide the default implementation.
+- An interface can't be instantiated. We have to provide the subclass
+- You can only instantiate a class if it implements all the pure virtual function of the base class
+- Most useful use case is to make sure a class has a function so you can pass it to a generic function that can work with all subclasses of the interface.
+
+Visibility
+- Concept from OOP
+- How visible members or functions from classes are
+- Who can see them, who can call them, etc
+- It has no effect on how our program runs. 
+- It is something to help us write better code and organize it better.
+- There are 3 visibility modifiers
+	- Private: Only the current class ( or friends ) can access these atributes/functions
+	- Public
+	- Protected: Current Class and child classes can access these atributes/functions
+- There's the friend keyword which means that two classes can access each others private members
+- Making everything public is a bad idea for the programmer and other people looking at the code
+- When you mark something as private your implicitly saying that you shouldn't access that from another class
+- You only know that you should be touching the public stuff
+- The whole getters and setters 
+
+Arrays
+- Collection of elements ( of the same type, usually in a row 
+
+Strings 
+- A group of characters, text
+- To understand Strings, we need to understand how characters work
+- A string is an array of characters
+
+Const
+- Fake keyword since it affects in the visibility of classes and stuff
+- It enforces other programmers to follow certain rules
+
+Mutable 
+- Two uses.
+	- Const: This is the most common use of mutable. To be able to modify a variable inside a const function in a class
+	- Lambdas: In practice, not used a lot. Used to make lambda able to modify variables passed to it since by default lambdas are read only
+
+Member Initializer Lists
+- Why should we use them? Because it's simple but takes a lot of space. It's more readable using member initializer lists
+- You shouls always use member initializer lists everywhere because it guarantees that members are intitialized and only one object of the members is created as opposed to created, destroyed and created.
+- In performance, it doesn't really with primitives but any other types it's better performance to use Member initializer lists
+
+Ternary Operator
+- Syntactic sugar for if statements
+- It's subjective if we should use it or not but in some cases it's more efficient due to compiler optimization
+- Nested ternary conditions are a bit messy
+
+How to create/instantiate c++ objects
+- In c++ we can choose if our object goes on the stack or on the heap
+- Stack objects have an automatic lifespan. Their lifetime is determined by the scope
+- In the heap we decide when to end the life of the object
+- If we can, we should create our objects on the stack since it's the fastest and most manageable way of instantiating objects
+- If we want the object to live outside the scope of the function we can't instantiate on the stack
+- Another for not allocating on the stack is because there's around 1mB of stack to use. 
+- It takes longer to allocate on the heap, and if we allocate on the heap we are responsible of deallocating
+
+The new keyboard
+- The purpose of new is to allocate memory on the heap. 
+- When we do int* a = new int; we are requesting for 4 bytes of memory and the it has to look for 4 free contiguous bytes of memory
+
+Implicit and explicit
+- C++ will sometimes implicitly convert a data type from one type to another
+- If we write explicit keyword in the declaration of a constructor no implicit conversions can be done
+- We use explicit if we want to be as safe as possible but it's not usually used.
+
+Operators and operator overloading
+- Operator overloading means giving new meaning to existing operators or using it in different ways
+- It's essentially a funciton but instead of calling it add it's the operator +
+- Operator overload should be intuitive and in places where it makes sense
+- Just because you can overload don't.
+
+this keyword
+- only accessible by member functions, ( functions in a class )
+- this is pointer to the current object instance that the method belongs to
+
+Object lifetime
+- Lifetime for stack based variables. 2 parts:
+	- you have to understand how things live on the stack to write code that doesn't crash
+	- Leverage how it works to do things they way i want it to.
+- The stack works like the stack data structure. To access anything in the middle you would have to destack to get to it. 
+- Every time we enter a scope, we push a stack frame on it. Any variable we declare in that scope will be written in that stack frame. When that scope ends and we take off the stack frame all the variables from that scope dissaper
+
+Smart Pointers
+- new allocates memory on the heap, and delete destroys the allocated memory
+- Smart pointers are a way to automate that process
+- Smart pointers mean that when you call new, you don't have to call delete
+- Smart pointers are a wrapper for a real pointer
+- Smart pointers will allocate the memory for you and depending on the smart pointer you use, the pointer will automatically be destroyed for you. 
+- unique pointer (unique_ptr): is a scope pointer, when that pointer goes out of scope, it's destroyed. You can't copy a unique_ptr because if you actually copy it to another pointer and you destroy one of them, then you have a pointer pointing to freed memory. Apart from this downside, it has low overhead
+- shared pointer (shared_ptr): Uses referencing counting ( practice where you keep track of how many references you have to your pointer and when it reaches 0, it's destroyed
+- weak pointer (weak_ptr): when you copy a shared_ptr to another shared_ptr, it increases the reference counter, but when you copy a shared_ptr to a weak pointer, it won't increase the ref count. the weak pointer is destroyed when the shared_ptr is destroyed but you can ask it if the object it's pointing to is still alive.
+- We should probably use them all the time since they automate our memory management. They prevent us from accidentally having leaking memory
+- Unique_ptr if we can, and shared_ptr if we have to share
+
+Copying and copy constructors
+- If we can avoid copying, we should
+- Usually always pass our objects by const reference
+
+Dynamic arrays in c++ 
+- We should get used to using the standard template library (STL)
+- It's a library filled with container types 
+- It's all written with templates meaning we choose the data type of the data structure
+- Vector shouldn't be called vector, it should be called arraylist
+- You can resize the vector
+- The basic explanation to adding new elements is that when we add, we create an array with one size bigger, copy the contents of the old array into the new array and add the new element.
+
+Optimizing the usage of std::vector
+- As we said before the memory reallocation done every time we add a new element to a vector can slow down our code quite a bit
+- We are going to try and avoid copying by using reserve and emplace_back
+
+Libraries in C++ ( Cherno looks over Visual Studio exclusive stuff )
+- There are a few strategies when dealing with libraries
+- The ideal repository ( of Cherno ) is to have everything you need to be able to compile and run the program inside the repository
+- Should i be compiling the libraries myself or link against prebuilt binaries?
+	- For serious projects, compile from source code
+	- If it's a throwaway kind of thing, link against prebuilt binaries
+- There are 2 types of linking
+	- Static: the library is put into our executable during compile time
+	- Dynamic: the library is linked at runtime
+- Static linking is preferable because since the compiler and linker have access to all the code, they can perform certain optimizations
+
+- Dynamic linking happens at runtime. The library is loaded during execution
+- The dll needs to be in the same path as the executable
+- Multiple Project is for visual studio
+- Cherno' include conventions. 
+	- <> -> for stuff outside the visual studio solution
+	- "" -> for stuff inside the visual studio solution
+
+How to deal with multiple return values
+- A function can return one variable
+- If we have to return a string and an int. How do we do it
+- If it's two ints we can use an array but it's not ideal
+
+Templates
+- Are more powerful than generics
+- Allows to define a template that will get the compiler to write code for you ( complex macro )
+- It's not limited to types. We can also a have a variable int sent to a template
+- This is a sort of metaprogramming
+- Templates can be useful in some situations like a logging system, material system
+- Templates are basically letting the compiler write code for you based on a set of rules
+- When templates get really crazy and it's too hard to debug you should return to simpler code
+
+Stack vs Heap
+- They are two areas we have in our ram
+- The stack is an area that has a predefined size ( around 2 Mb) 
+- The heap is also predefined but it can increase or decrease as our program runs
+- Memory is used to store data and the stack and the heap are the places we are allowd to store our data.
+- We can request memory from both types. The big differences is how our memory is allocated
+- When we create an int, we have to find 4 bytes of contiguous free memory. The way we store it changes depending if we want to create it on the stack or heap
+- the new keyword basically is a malloc
+- the program has a list of free memory addresses ( called freelist ) so that when you allocate it knows where to llok
+- There's a lot of bookkeeping going on with new.
+- malloc is a fairly heavy function. If there isn't actually enough memory in the freelist for the object you are creating, it takes even longer to allocate the memory
+- Allocating on the stack is 1 cpu instruction
+- Allocating on the heap is a huge ordeal.
+- The only times we should allocate on the heap is when we need the lifetime of a type to live beyond it's scope or if what we are loading is too big for the stack ( example: texture ).
+
+Macros
+- It's a preprocessor instruction that executes before compilation
+- All preprocessor instructions start with #
+- Before we compile there's a preprocessor pass that executes the preprocessor instructions and then compiles
+- Basically we can write text that will be replaces before it's compiled
+- It's not just a find and replace. We can have variables and functions, etc...
+- Macros are mostly used for debugging
+
+Auto keyword
+- we have different types, ints, floats, arrays, pointers, etc
+- There is a way for c++ to deduce the data we are creating
+- The auto keyword is for when we want to declare a variable without explicitly writing the type
+- It has good things and bad things
+- If i have auto. Do i ever really need to write types?
+- Writing the type is usually cleaner
+- For Long types, it's useful
+- There are complicated templates where you are forced to use auto
+- You can use auto for functions
+
+Standard array c++ 
+- static array. It's a constant size array provided by a library in c++
+- Since the library array and c-style array are so similar, when should we use each.
+- There is no downside of using std::array. It should almost always be used over c-style arrays.
+
+Function pointers
+- raw function pointer comes from c
+- function pointers are a way to assign a function to a variable
+
+Lambdas
+- Ways to define an anonymous function
+- Use a function with a variable
+- Whenever you have a function pointer, you can use a lambda
+- It's a way to define a function without defining a function
+- The most usual use case is to be able to pass a function to a function and let that function call the passed function pointer
+
+Why I don't 'using namespace std'
+- Normally there are a lot of times we use things from the std library
+- One of the advantages of not using 'using namespace std' is that we can easily see what we are using from the standard library
+- If i was using an alternative implementation of vector, with 'uns' i can't tell which I'm using but without using it i can see that
+	- eastl:vector -> this is from ea
+	- std::vector  -> this is from the standard library
+- We can get ambiguous symbol errors by using 'uns'
+- never use using namespace std in a header file
+- It's better to not use to avoid error
+- If i have to use namespace, use it in the smallest scope we can
+
+Namespaces
+- They exist to avoid naming conflicts
+- We want to be able to call the same function from different contexts
+- In C, they would solve their problems by naming the start of a function with the library name
+- Ex: GLFW_Init GLFW_Start etc
+- :: -> is the namespace operator
+- Use namespaces in the smallest scope we can for debugging purposes
+- if we are using any c code we should namespace our code to ensure the functions we create aren't the same as any c function.
+
+Threads
+- Make things run in parallel
+- In all the previous code we've been doing with 1 thread.
+- The simplest example is if part of our code is waiting for use input. We could do something while waiting.
+- compile with -lpthread on linux
+- Threads are normally used for optimizing. 
+- Some things can be much faster by using threads.
+
+Timers
+- chrono library
+- Unless you want really precise timing ( using lower level api ) chrono is good for most cases for timing needs
+
+Multidimensional Arrays
+- A 2d array is basically an array of arrays
+- A 3d array would be an array of arrays of arrays
+- When you use array of arrays it results in memory fragmentation
+- With an array we have however the size of the array but it's contiguous memory
+- In a multidimensional array we have additional jumps because of the array of pointer. (Fragmented memory)
+- This provokes cache misses
+- This is usual slower than a single dimensional array
+- There are ways to use an array like a multidimensional array
+
+Sorting
+- we can write our own algorithm like bubblesort, heapsort, etc
+- if we are working with the stl then there's no reason to write our own sorting algorithm
+- std sort can sort any iterator and using any predicate to sort.
+
+Type Punning
+- Way of getting around the c++ type system. 
+- You can change how types are treated
+
+Union
+- Used in relation to type punning. When we want multiple way is to access data
+- Useful when you want to give two names to the same variable
+- If i have a struct with 3 floats i can use it as a Vec3 or as a color ( RGB )
+- They are usually anonymous ( we don't give them a name )
+
+Virtual Destructor
+- Polymorphism destruction. 
+- always declare the destructor as virtual if you allow the subclassing polymorphism to happen
+
+Casting
+- type casting or conversion
+- i have to stick to a type, 
+- There are c-style casts or c++ style casts
+- Three four main casts in c++ style. These casts don't do anything that c style casts can't do
+- The c++ style casts has additional functionality and is also clearer in what we are trying to do
+- C++ casts do make the code more readable
+
+Conditional and Action Breakpoints ( Visual Studio )
+- Conditional Breakpoint: I want the breakpoint to trigger under a certain condition
+- Action Breakpoints: it allows us to print to the console (or additional things ) when we hit a breakpoint
+	- One that continues the program running
+	- One that pauses the program
+- Everything that we do here could be done in the code.
+- This comes in handy for quicker debugging
+- The biggest advantage is that you can do this while running the program
+
+Safety in modern c++ and how to teach it
+- The more features you know, the more doubts you have about the correct way of coding in c++
+- Safe programming: tries to avoid bugs, memory leaks, etc
+- We are moving towards using more smart pointers. They exist to make our lives easier. 
+- Problems:
+	- memory leak 
+	- memory ownership: who owns the pointer
+- If it's production code, the safest thing is to use smart pointers
+- If it's a sandbox or just quick code to test things out, we can use raw or pointer
+- Understanding raw pointers is important since smart pointers are wrappers to raw pointers.
+
+Precompiled Headers 
+- They give the opportunity to grab a bunch of header files and convert them into a "compiled" format that the compiler then use instead of having to read those header files over and over. 
+- A lot of the things in the stl are from header files. 
+- Every time i include <vector> in one of my c++ files, it needs to read the entire header file and compile it. Not only that, it also includes the header files that vector includes
+- If every time we compile we have to copy the <vector> code, our compile time can really add up. Not only that, we may include <vector> in multiple files ( different translation units ) and so this process is done for multiple files. 
+- With precompiled headers you compile some headers you specify, compiles it once and stores it in a binary formatthat is way faster for the compiler to deal with than just text.
+- When you compile with the precompiled header, it's much faster.
+- What not to do with precompiled headers.
+	- if you put stuff in your precompiled header file that changes a lot, then the precompiled header file has to be rebuilt.
+	- if you're rebuilding the precompiled headers a lot, you're using them badly. 
+	- usually used for code that isn't ours, libraries like stl is a good example.
+- Regarding dependencies, since you shove everything into the pch(pre compiled header ) it can hide what is being used from the pch. 
+

@@ -1,0 +1,109 @@
+// Notes from https://www.youtube.com/watch?v=Ojac4Y4sxF0
+Every file is compiled to object files that don't have references resolved
+The linking process the swaps the references to the correct directions.
+
+We want to compile by hand.
+1 - In our initial case we have:
+g++ -o vec3.o vec3.cpp
+
+So we get:
+Retroman/1_Compiling_and_makefiles » g++ -o vec3.o vec3.cpp 
+/usr/bin/ld: /usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/../../../../lib/Scrt1.o: in function `_start': 
+(.text+0x24): undefined reference to `main' 
+collect2: error: ld returned 1 exit status 
+Retroman/1_Compiling_and_makefiles » g++ -o vec3.o vec3.cpp 
+vec3.cpp:1:10: fatal error: vec3.hpp: No such file or directory 
+ #include <vec3.hpp> // doing < > for example 
+          ^~~~~~~~~~ 
+compilation terminated. 
+
+
+When using <> to reference libs, it looks for system libs as opposed to "" which looks for a relative path
+( How do we know where are our libs are )
+gcc --print-searc-dirs
+
+To not have to change the file we can add a flag to tell the compiler to look in this directory for library includes
+
+2 - Adding current dir as a lib path
+g++ -o vec3.o vec3.cpp -I.
+
+After fixing that error we get: 
+Retroman/1_Compiling_and_makefiles » g++ -o vec3.o vec3.cpp -I. 
+/usr/bin/ld: /usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/../../../../lib/Scrt1.o: in function `_start': 
+(.text+0x24): undefined reference to `main' 
+collect2: error: ld returned 1 exit status 
+
+This is a linker error. The file has compiled correctly but the linker doesn't allow it to finish the compilation
+
+3 - We add flag to tell it only to compile
+g++ -c -o vec3.o vec3.cpp -I.
+
+4 - We can improve it by removing -o vec3.o. When using -c it just needs the .cpp
+g++ -c vec3.cpp -I.
+
+This is a good way of comopiling files
+
+5 - We can compile all files
+g++ -c *.cpp -I.
+
+6 - How do we link them. Let's try the wildcard approach
+g++ -o ex *.o
+
+7 - To "reference" a library during linkage we use -lLibname
+g++ -o ex *.o -lsfml-graphics
+
+8 - When we do g++ -c *.cpp -I. we recompile files that haven't changed. To avoid doing this we can use a makefile
+
+we execute with make 
+
+// this says, whenever vec3.cpp changes, recompile vec3.cpp
+vec3.o: vec3.cpp
+	g++ -c vec3.cpp -I.
+
+Just with this we just compile files that have changed
+
+9 - We can do this for other files
+make 
+
+vec3.o: vec3.cpp
+	g++ -c vec3.cpp -I.
+
+main.o: main.cpp
+	g++ -c main.cpp -I.
+
+but this will only execute the first target ( vec3.o ) 
+we can specify the target by doing 
+make main.o
+
+10 - We can structure it as a tree
+
+make 
+executable: vec3.o main.o
+
+vec3.o: vec3.cpp
+	g++ -c vec3.cpp -I.
+
+main.o: main.cpp
+	g++ -c main.cpp -I.
+
+11 - We can generalize the different files by doing
+
+executable: vec3.o main.o
+// anything.o using anything.cpp
+// we have macros 
+// $^ -> stuff on left side .o
+// $@ -> stuff on the right side .cpp
+%.o: %.cpp
+	gcc -o $@ -c $^ -I.
+	
+12 - Now we have to let it know it needs all objects. Let's create it with a variable.
+
+OBJECTS := hitable_list.o main.o sphere.o vec3.o
+
+executable: $(OBJECTS)
+	g++ -o $@ $^ 
+
+%.o: %.cpp
+	gcc -o $@ -c $^ -I.
+
+13 - Other steps are commented in makefile

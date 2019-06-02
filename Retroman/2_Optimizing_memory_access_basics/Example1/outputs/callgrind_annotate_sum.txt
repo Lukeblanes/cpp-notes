@@ -1,0 +1,71 @@
+2_Optimizing_memory_access_basics/Example1 » callgrind_annotate --auto=yes callgrind.out.26399 
+-------------------------------------------------------------------------------- 
+Profile data file 'callgrind.out.26399' (creator: callgrind-3.14.0) 
+-------------------------------------------------------------------------------- 
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 100500505 
+Trigger: Program termination 
+Profiled target:  ./m (PID 26399, part 1) 
+Events recorded:  Ir 
+Events shown:     Ir 
+Event sort order: Ir 
+Thresholds:       99 
+Include dirs: 
+User annotated: 
+Auto-annotation:  on 
+-------------------------------------------------------------------------------- 
+         Ir 
+-------------------------------------------------------------------------------- 
+603,064,017  PROGRAM TOTALS 
+-------------------------------------------------------------------------------- 
+         Ir  file:function 
+-------------------------------------------------------------------------------- 
+600,000,016  example1.cpp:main [/home/luke/Dev/C++/Retroman/2_Optimizing_memory_access_basics/Example1/m] 
+-------------------------------------------------------------------------------- 
+-- Auto-annotated source: example1.cpp 
+-------------------------------------------------------------------------------- 
+         Ir 
+-- line 5 ---------------------------------------- 
+          . 
+          .  uint32_t values[size] = {1}; 
+          . 
+          .  // Volatile will indicate that m_total will be accessible by any other file 
+          .  volatile uint32_t m_total = 0; 
+          . 
+          .  void sum() // 0.24s 
+          .  { 
+200,000,001      for (uint32_t i = 0; i< size; ++i) 
+          .      { 
+400,000,000          m_total += values[i]; 
+          .      } 
+          .  } 
+          . 
+          .  // The way this improves is by not accessing 
+          .  // m_total in the for loop. Accessing a "global" 
+          .  // variable requires to store it locally and 
+          .  // using a local variable is inmediate. 
+          .  void sum2() // 0.05s 
+-- line 23 ---------------------------------------- 
+-- line 26 ---------------------------------------- 
+          .      for (uint32_t i = 0; i< size; ++i) 
+          .      { 
+          .          aux += values[i]; 
+          .      } 
+          .      m_total = aux; 
+          .  } 
+          . 
+          .  int main() 
+          3  { 
+          .      sum(); 
+          .      //sum2(); 
+          9      std::cout << m_total << "\n"; 
+      1,730  => ???:_dl_runtime_resolve_fxsave (1x) 
+          . 
+          .      return 0; 
+          5  } 
+-------------------------------------------------------------------------------- 
+Ir 
+-------------------------------------------------------------------------------- 
+99  percentage of events annotated 

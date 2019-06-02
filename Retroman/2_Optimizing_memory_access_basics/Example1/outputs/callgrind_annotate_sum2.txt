@@ -1,0 +1,61 @@
+2_Optimizing_memory_access_basics/Example1 » callgrind_annotate --auto=yes callgrind.out.27281 
+-------------------------------------------------------------------------------- 
+Profile data file 'callgrind.out.27281' (creator: callgrind-3.14.0) 
+-------------------------------------------------------------------------------- 
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 25499587 
+Trigger: Program termination 
+Profiled target:  ./m (PID 27281, part 1) 
+Events recorded:  Ir 
+Events shown:     Ir 
+Event sort order: Ir 
+Thresholds:       99 
+Include dirs: 
+User annotated: 
+Auto-annotation:  on 
+-------------------------------------------------------------------------------- 
+         Ir 
+-------------------------------------------------------------------------------- 
+103,061,248  PROGRAM TOTALS 
+-------------------------------------------------------------------------------- 
+         Ir  file:function 
+-------------------------------------------------------------------------------- 
+100,000,020  example1.cpp:main [/home/luke/Dev/C++/Retroman/2_Optimizing_memory_access_basics/Example1/m] 
+  1,281,599  ???:_dl_lookup_symbol_x [/usr/lib/ld-2.29.so] 
+    831,757  ???:do_lookup_x [/usr/lib/ld-2.29.so] 
+-------------------------------------------------------------------------------- 
+-- Auto-annotated source: example1.cpp 
+-------------------------------------------------------------------------------- 
+         Ir 
+-- line 17 ---------------------------------------- 
+          .  } 
+          . 
+          .  // The way this improves is by not accessing 
+          .  // m_total in the for loop. Accessing a "global" 
+          .  // variable requires to store it locally and 
+          .  // using a local variable is inmediate. 
+          .  void sum2() // 0.05s 
+          .  { 
+          4      uint32_t aux = m_total; 
+          .      for (uint32_t i = 0; i< size; ++i) 
+          .      { 
+100,000,001          aux += values[i]; 
+          .      } 
+          1      m_total = aux; 
+          .  } 
+          . 
+          .  int main() 
+          2  { 
+          .      //sum(); 
+          .      sum2(); 
+          9      std::cout << m_total << "\n"; 
+      1,730  => ???:_dl_runtime_resolve_fxsave (1x) 
+          . 
+          .      return 0; 
+          5  } 
+-------------------------------------------------------------------------------- 
+Ir 
+-------------------------------------------------------------------------------- 
+97  percentage of events annotated 
