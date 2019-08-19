@@ -1,0 +1,10 @@
+[GO_0]: Create
+[SPR]: Create
+[GO_1]: Create
+[SPR]: Create
+[GO_2]: Move from GO_0
+[GO_0]: Move Assign from GO_1
+[GO_1]: Move Assign from GO_2
+Destroy
+Destroy
+Destroy
